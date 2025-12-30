@@ -167,6 +167,31 @@ li {
   line-height: 1.3;
 }
 
+.toggle-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.toggle-bar button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.toggle-bar button.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.article-content {
+  line-height: 1.7;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   h1 {
