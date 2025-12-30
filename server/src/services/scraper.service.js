@@ -21,31 +21,37 @@ async function getLastPageNumber() {
 }
 
 async function scrapePage(pageNumber) {
-  const url =
-    pageNumber === 1
-      ? BASE_URL
-      : `${BASE_URL}/page/${pageNumber}/`;
+  const url = pageNumber === 1 ? BASE_URL : `${BASE_URL}/page/${pageNumber}/`;
 
   const { data } = await axios.get(url);
   const $ = cheerio.load(data);
 
   const articles = [];
 
-  $("article").each((_, el) => {
+  const articleEls = $("article");
+
+  for (let i = 0; i < articleEls.length; i++) {
+    const el = articleEls[i];
     const titleEl = $(el).find("h2 a");
+
     const title = titleEl.text().trim();
     const relativeUrl = titleEl.attr("href");
 
-    if (!title || !relativeUrl) return;
+    if (!title || !relativeUrl) continue;
+
+    const fullUrl = relativeUrl.startsWith("http")
+      ? relativeUrl
+      : `https://beyondchats.com${relativeUrl}`;
+
+    const content = await scrapeArticleContent(fullUrl);
 
     articles.push({
       title,
-      url: relativeUrl.startsWith("http")
-        ? relativeUrl
-        : `https://beyondchats.com${relativeUrl}`,
-      slug: relativeUrl.split("/").filter(Boolean).pop()
+      url: fullUrl,
+      slug: relativeUrl.split("/").filter(Boolean).pop(),
+      content,
     });
-  });
+  }
 
   return articles;
 }
@@ -71,10 +77,14 @@ async function scrapeOldestArticles(limit = 5) {
   return collected;
 }
 
-const testing = async() =>{
-    console.log(await scrapeOldestArticles());
-}
+async function scrapeArticleContent(url) {
+  const { data } = await axios.get(url);
+  const $ = cheerio.load(data);
 
-testing();
+  // Adjust selector if needed after inspecting site
+  const content = $("article").text().trim();
+
+  return content;
+}
 
 module.exports = { scrapeOldestArticles };

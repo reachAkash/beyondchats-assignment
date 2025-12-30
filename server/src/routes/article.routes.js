@@ -36,13 +36,4 @@ router.put(
   })
 );
 
-router.delete(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    const deleted = await Article.findByIdAndDelete(req.params.id);
-    if (!deleted) throw new AppError("Article not found", 404);
-    res.json({ message: "Deleted" });
-  })
-);
-
 module.exports = router;

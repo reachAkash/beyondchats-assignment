@@ -7,6 +7,7 @@ exports.scrapeAndStore = async (req, res, next) => {
   let insertedCount = 0;
 
   for (const article of scrapedArticles) {
+    console.log(article.content);
     await Article.updateOne(
       { slug: article.slug },
       {
@@ -14,6 +15,7 @@ exports.scrapeAndStore = async (req, res, next) => {
           title: article.title,
           url: article.url,
           slug: article.slug,
+          content: article.content || "Dummy content",
           status: "SCRAPED",
         },
       },
